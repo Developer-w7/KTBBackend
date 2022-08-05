@@ -1,0 +1,6 @@
+db.getCollection('student').find({favoriteFruit:{$exists:true}})
+
+db.getCollection('student').find({"zones.2b":{$in: [50]}}) or
+db.getCollection('student').find({"zones.2b":50})
+
+db.getCollection('student').find({$and:[{"zones.2b":50},{"zones.2b":44}]})
