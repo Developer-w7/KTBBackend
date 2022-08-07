@@ -8,10 +8,12 @@ var crypto = require('crypto');
 require('dotenv').config();
 
 const {connectToDb,connection} = require('./db/connect.js');
+const {Seeder} = require('./db/Seeder.js');
 var apiRouter = require("./routes/api");
 const UserModel = require('./models/user.js');
 // const StudentModel = require('./models/to-del/student.js');
-// const CourseModel = require('./models/course.js');
+const CourseModel = require('./models/course.js');
+const LanguageModel = require('./models/language.js');
 // const CollegeModel = require('./models/college.js');
 const UserRoleModel = require('./models/user_role.js');
 
@@ -25,9 +27,11 @@ var faker = require('faker');
 var app = express();
 
 connectToDb();
+
+
 // const http = require('http');
 // const test = require('./test');
-
+Seeder();
 const hostname = '127.0.0.1';
 const port = 5000;
 
@@ -51,13 +55,6 @@ app.use(
 );
 app.use("/", apiRouter);
 
-
-// UserRoleModel.create({
-        
-//       RoleName: "Instructor",
-//       Privilages: "Level-309"
-//       });
-
 app.get('/', function(req, res, next ){
   var randomName = faker.name.findName(); // Rowan Nikolaus
   var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
@@ -66,7 +63,7 @@ app.get('/', function(req, res, next ){
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.json(randomCard);
-    // res.send('<h2>haii</h2>')
+   
 });
 
 
@@ -109,72 +106,72 @@ app.get('/user', async(req, res)=>{
   });
 
 });
-app.post('/insert', async(req, res)=>{
-  var randomName = faker.name.findName(); // Rowan Nikolaus
-  var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
-  var randomCountry = faker.address; // Kassandra.Haley@erich.biz
-  var randomPhone = faker.phone.phoneNumber(); // Kassandra.Haley@erich.biz
-  var randomInstitution = faker.company.companyName(); // Kassandra.Haley@erich.biz
-  var gender = faker.random.arrayElements(["male",
-  "female",
- ]);
- var eyeColor = faker.random.arrayElements(["blue",
- "black", 
-]);
-var fruit = faker.random.arrayElements(["apple",
-"orange", "berry" , "dragon fruit", 
-]);
-  var age = faker.random.arrayElements(["21",
-  "30",
-  "25",
-  "35",
-  "28"]);
+app.post('/test', async(req, res)=>{
+//   var randomName = faker.name.findName(); // Rowan Nikolaus
+//   var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
+//   var randomCountry = faker.address; // Kassandra.Haley@erich.biz
+//   var randomPhone = faker.phone.phoneNumber(); // Kassandra.Haley@erich.biz
+//   var randomInstitution = faker.company.companyName(); // Kassandra.Haley@erich.biz
+//   var gender = faker.random.arrayElements(["male",
+//   "female",
+//  ]);
+//  var eyeColor = faker.random.arrayElements(["blue",
+//  "black", 
+// ]);
+// var fruit = faker.random.arrayElements(["apple",
+// "orange", "berry" , "dragon fruit", 
+// ]);
+//   var age = faker.random.arrayElements(["21",
+//   "30",
+//   "25",
+//   "35",
+//   "28"]);
   
-  const userEntry = new UserModel({ fullName: randomName ,email:randomEmail});
+//   const userEntry = new UserModel({ fullName: randomName ,email:randomEmail});
   
   
-  const studentEntry = new UserModel({
-    "index": Number(0),
-    "fullName": randomName,
-    "course":"62e943ac8b1883c4d48411b8",
-    "college": "62e9521afdff1958cd162d83",
-    "role":"62ebcfb7b789f0d1661509d9",
-    "instructors":['62ebda524d267e0193068de6','62ebda4f4d267e0193068de0'],
-    "isActive": false,
-    "profileImg":faker.image.people(200, 200, false),
-    "coverImg":faker.image.nature(1920, 1080, true),
-    "email": randomEmail,
-    "phone": randomPhone,
-    "location": {
-      "country": randomCountry.country(),
-      "address": randomCountry.secondaryAddress(),
-      "state":randomCountry.state(),
-      "zipcode": randomCountry.zipCodeByState(),
-    },
-    "zones":{"2b":[23, 50,44],"3a":[34,50,88,12]},
-    "userName": randomEmail,
-    "registered":faker.date.between('2018-01-01T00:00:00.000Z', '2022-01-01T00:00:00.000Z'),
-    "age": Number(age[0]),
-    "gender": gender[0],
-    "bio":faker.lorem.paragraphs(2, '<br/>'),
-    "eyeColor": eyeColor[0],
-    "favoriteFruit": fruit[0],
-    "favoriteCinema":['avatar2','ironman2'],
-    "tags": faker.random.arrayElements(["enim",
-    "id",
-    "velit",
-    "ad",
-    "consequat"])
-  });
+//   const studentEntry = new UserModel({
+//     "index": Number(0),
+//     "fullName": randomName,
+//     "course":"62e943ac8b1883c4d48411b8",
+//     "college": "62e9521afdff1958cd162d83",
+//     "role":"62ebcfb7b789f0d1661509d9",
+//     "instructors":['62ebda524d267e0193068de6','62ebda4f4d267e0193068de0'],
+//     "isActive": false,
+//     "profileImg":faker.image.avatar(200, 200, false),
+//     "coverImg":faker.image.nature(1920, 1080, true),
+//     "email": randomEmail,
+//     "phone": randomPhone,
+//     "location": {
+//       "country": randomCountry.country(),
+//       "address": randomCountry.secondaryAddress(),
+//       "state":randomCountry.state(),
+//       "zipcode": randomCountry.zipCodeByState(),
+//     },
+//     "zones":{"2b":[23, 50,44],"3a":[34,50,88,12]},
+//     "userName": randomEmail,
+//     "registered":faker.date.between('2018-01-01T00:00:00.000Z', '2022-01-01T00:00:00.000Z'),
+//     "age": Number(age[0]),
+//     "gender": gender[0],
+//     "bio":faker.lorem.paragraphs(2, '<br/>'),
+//     "eyeColor": eyeColor[0],
+//     "favoriteFruit": fruit[0],
+//     "favoriteCinema":['avatar2','ironman2'],
+//     "tags": faker.random.arrayElements(["enim",
+//     "id",
+//     "velit",
+//     "ad",
+//     "consequat"])
+//   });
 
 
 
-  const resp=await studentEntry.save();
+//   const resp=await studentEntry.save();
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.json({message:'Entry Succeed',resp});
+//     res.statusCode = 200;
+//     res.setHeader('Content-Type', 'text/plain');
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.json({message:'Entry Succeed',resp});
 });
 
 
