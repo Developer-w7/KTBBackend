@@ -13,13 +13,21 @@ var apiRouter = require("./routes/api");
 const UserModel = require('./models/user.js');
 // const StudentModel = require('./models/to-del/student.js');
 const CourseModel = require('./models/course.js');
+const FaqModel = require('./models/faq.js');
 const LanguageModel = require('./models/language.js');
 // const CollegeModel = require('./models/college.js');
 const UserRoleModel = require('./models/user_role.js');
 
 let customerId = null;
 var express = require('express');
+var cors = require('cors')
 // const Mongoose = require('mongoose');
+
+// Load Json
+var page1 = require('./data/page1.json')
+var page2 = require('./data/page2.json')
+var page3 = require('./data/page3.json')
+
 
 const MongoStore = require('connect-mongo');
 var faker = require('faker');
@@ -31,15 +39,15 @@ connectToDb();
 
 // const http = require('http');
 // const test = require('./test');
-Seeder();
+// Seeder();
 const hostname = '127.0.0.1';
-const port = 5000;
+const port = 5001;
 
 // const sessionStore = new MongoStore({ uri: process.env.connectionString, collection: 'sessions' });
 // Session Config
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-console.log(process.env.connectionString)
+
 app.use(
   session({
       secret: 'story book',
@@ -53,6 +61,7 @@ app.use(
     }
   })
 );
+app.use(cors())
 app.use("/", apiRouter);
 
 app.get('/', function(req, res, next ){
@@ -89,6 +98,141 @@ UserModel.find()
   });
 
 });
+
+
+app.get('/photo-gallery-feed-page/page/:id', async(req, res)=>{
+  var id = req.params.id;
+  
+  let DataToSend={};
+  if(id === '1'){
+    DataToSend=page1;
+  }else if(id === '2'){
+    DataToSend=page2;
+  }else if(id === '3'){
+    DataToSend=page3;
+  }else{
+    DataToSend={"nodes":[]};
+  }
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.status(200).json(DataToSend);
+
+});
+
+app.get('/courses', async(req, res)=>{
+  var id = req.params.id;
+  const query = req.query;// query = {sex:"female"}
+  var randomName = faker.name.findName(); // Rowan Nikolaus
+  var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
+
+  const pageOptions = {
+    page: parseInt(req.query.page, 10) || 0,
+    limit: parseInt(req.query.limit, 10) || 10
+}
+
+CourseModel.find()
+  .skip(pageOptions.page * pageOptions.limit)
+  .limit(pageOptions.limit)
+  .exec(function (err, doc) {
+      if(err) { res.status(500).json(err); return; };
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.status(200).json(doc);
+  });
+
+});
+
+app.post('/courses/create', async(req, res)=>{
+  // var id = req.params.id;
+  console.log(req.params);
+  const query = req.query;// query = {sex:"female"}
+  var randomName = faker.name.findName(); // Rowan Nikolaus
+  var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
+
+
+const courseEntry = new CourseModel({"courseImg":faker.image.nature(200, 200, false),'CourseName':query.name});
+  const resp=await courseEntry.save();
+    res.statusCode = 200;
+    res.setHeader('Accept', 'application/json',);
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json({message:'Entry Succeed',resp});
+
+});
+app.post('/courses/create_faq', async(req, res)=>{
+  // var id = req.params.id;
+  console.log(req.params);
+  const query = req.query;// query = {sex:"female"}
+  var randomName = faker.name.findName(); // Rowan Nikolaus
+  var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
+  const course_id="62ee3812db73bf43c92cbc5e";
+
+const faqEntry = new FaqModel({course:course_id,"faqImg":faker.image.nature(200, 200, false),'CourseName':randomName, question:"Test Question",answer:"Test Answer"});
+  const resp=await faqEntry.save();
+    res.statusCode = 200;
+    res.setHeader('Accept', 'application/json',);
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json({message:'Entry Succeed',resp});
+
+});
+
+app.get('/instructors', async(req, res)=>{
+  var id = req.params.id;
+  const query = req.query;// query = {sex:"female"}
+  var randomName = faker.name.findName(); // Rowan Nikolaus
+  var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
+
+  const pageOptions = {
+    page: parseInt(req.query.page, 10) || 0,
+    limit: parseInt(req.query.limit, 10) || 10
+};
+
+UserModel.find({role:"62ebd9c02d5208ee7ff6631e"})
+  
+  .skip(pageOptions.page * pageOptions.limit)
+  .limit(pageOptions.limit)
+  .exec(function (err, doc) {
+      if(err) { res.status(500).json(err); return; };
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.status(200).json(doc);
+  });
+
+});
+app.get('/faqsById', async(req, res)=>{
+
+
+
+  var id = req.query.id;
+
+  FaqModel.find({course:id})
+  .populate('course')
+  .exec(function (err, doc) {
+      if(err) { res.status(500).json(err); return; };
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.status(200).json(doc);
+  });
+
+});
+
+app.get('/faqs', async(req, res)=>{
+
+  try{
+    FaqModel.find()
+    .populate('course')
+    .exec(function (err, doc) {
+        if(err) { res.status(500).json(err); return; };
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.status(200).json(doc);
+    });}catch(e){
+      console.log(e)
+    }
+  
+  });
 
 app.get('/user', async(req, res)=>{
 
