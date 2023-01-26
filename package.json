@@ -15,12 +15,18 @@
   },
   "dependencies": {
     "base64url": "^3.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
     "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "ejs": "^3.1.8",
     "eslint": "^7.23.0",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
     "faker": "^5.5.3",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.1.4",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0"

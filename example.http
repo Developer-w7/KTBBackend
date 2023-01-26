@@ -1,8 +1,24 @@
-GET http://localhost:5000/
+GET http://localhost:5001/query
 ###
 GET http://localhost:5000/users?page=1&limit=5
 ###
-POST  http://localhost:5000/insert
+POST  http://localhost:5001/insert
+content-type: application/json
+
+{
+    "email": null,
+    "password": "123456"
+}
 ###
 GET http://localhost:5000/user?page=1&limit=10
+###
+GET http://localhost:5001/faqs
 
+###
+GET http://localhost:5001/faqsById?id=62e943ac8b1883c4d48411b8
+
+###
+POST  http://localhost:5001/courses/create_faq
+
+###
+POST http://localhost:5001/auth

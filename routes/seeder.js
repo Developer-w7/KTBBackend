@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-const QueryController = require("../controller/QueryController");
+// const QueryController = require("../controller/QueryController");
 const SeedController = require("../controller/SeedController");
 
-router.get("/", QueryController.listCategories);
-router.post("/insert", SeedController.seedUser);
+// router.get("/", QueryController.listCategories);
+router.post("/", SeedController.seedUser);
 // router.get("/user-types", QueryController.getUserTypes);
 // router.get("/types", QueryController.getTypes);
 // router.post("/", QueryController.createApplication);
