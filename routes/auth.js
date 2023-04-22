@@ -5,7 +5,7 @@ var router = express.Router();
 const AuthController = require("../controller/AuthController");
 
 // router.get("/", QueryController.listCategories);
-router.post("/", AuthController.listCategories);
+router.post("/", AuthController.checkLogin);
 // router.get("/user-types", QueryController.getUserTypes);
 // router.get("/types", QueryController.getTypes);
 // router.post("/", QueryController.createApplication);

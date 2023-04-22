@@ -5,13 +5,14 @@ const FaqSchema = Mongoose.Schema(
     {
       CourseName: { type: String, default: "" },
       course: { type: Mongoose.Schema.ObjectId,ref:CourseModel, required:true, index:true },
-     
+      id:{ type: Number, default: "", required:true, unique: true },
       faqImg: { type: String, default: "" },
       question: { type: String, default: "" },
       answer: { type: String, default: "" },
       
 
     },{ timestamps: true, collection: "faq" })
+    // mongoose.model.createIndexes();
     let FaqModel = Mongoose.model("faqs", FaqSchema);
 
 

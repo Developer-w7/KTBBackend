@@ -15,10 +15,19 @@ GET http://localhost:5000/user?page=1&limit=10
 GET http://localhost:5001/faqs
 
 ###
-GET http://localhost:5001/faqsById?id=62e943ac8b1883c4d48411b8
+GET http://localhost:5001/faqsById?id=62ee3812db73bf43c92cbc5e&iid=4&Course_Name=Marion Boehm DVM
 
 ###
+GET http://localhost:5001/faqsById?&iid=4
+###
 POST  http://localhost:5001/courses/create_faq
+content-type: application/json
+
+{
+    "id":10,
+    "course_id":"62ee3812db73bf43c92cbc5e"
+    
+}
 
 ###
 POST http://localhost:5001/auth

@@ -4,7 +4,7 @@
 const session = require('express-session');
 var passport = require('passport');
 var crypto = require('crypto');
-
+var morgan = require('morgan');
 require('dotenv').config();
 
 const {connectToDb,connection} = require('./db/connect.js');
@@ -14,11 +14,15 @@ const UserModel = require('./models/user.js');
 // const StudentModel = require('./models/to-del/student.js');
 const CourseModel = require('./models/course.js');
 const FaqModel = require('./models/faq.js');
+const CounterModel = require('./models/counter.js');
 const LanguageModel = require('./models/language.js');
 // const CollegeModel = require('./models/college.js');
 const UserRoleModel = require('./models/user_role.js');
 
 let customerId = null;
+
+
+
 var express = require('express');
 var cors = require('cors')
 // const Mongoose = require('mongoose');
@@ -62,6 +66,12 @@ app.use(
   })
 );
 app.use(cors())
+
+if(process.env.NODE_ENV="TEST") {
+  //use morgan to log at command line
+  app.use(morgan('combined')); //'combined' outputs the Apache style LOGs
+}
+
 app.use("/", apiRouter);
 
 app.get('/', function(req, res, next ){
@@ -162,19 +172,48 @@ const courseEntry = new CourseModel({"courseImg":faker.image.nature(200, 200, fa
 });
 app.post('/courses/create_faq', async(req, res)=>{
   // var id = req.params.id;
-  console.log(req.params);
+
+  console.log(req.body);
   const query = req.query;// query = {sex:"female"}
   var randomName = faker.name.findName(); // Rowan Nikolaus
   var randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
-  const course_id="62ee3812db73bf43c92cbc5e";
+  const {course_id,id} = req.body;
+  if(!req.body.course_id || req.body.course_id === ""){
+    res.statusCode = 400;
+    res.setHeader('Accept', 'application/json',);
+    // res.setHeader('Content-Type', 'application/json');
+    // res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json({errors:{message:'course_id required'}});
+  }
 
-const faqEntry = new FaqModel({course:course_id,"faqImg":faker.image.nature(200, 200, false),'CourseName':randomName, question:"Test Question",answer:"Test Answer"});
-  const resp=await faqEntry.save();
+// const faqEntry = new FaqModel({course:course_id,id,"faqImg":faker.image.nature(200, 200, false),'CourseName':randomName, question:"Test Question",answer:"Test Answer"});
+//   const resp=await faqEntry.save();
+  // const counterEntry = new CounterModel({CounterId:course_id,Count:1});
+  
+  CounterModel.findOneAndUpdate({id:"faqSeqCount"},
+  {"$inc":{"Count":1}},
+  {new:true},async(err,cd)=>{
+    let seqId;
+    if(cd == null){
+      const counterEntry = new CounterModel({CounterId:"faqSeqCount",Count:1});
+      counterEntry.save();
+      seqId=1;
+    }else{
+      seqId=cd.Count;
+    }
+    
+    console.log(seqId);
+    const faqEntry = new FaqModel({course:course_id,id:seqId,"faqImg":faker.image.nature(200, 200, false),'CourseName':randomName, question:"Test Question",answer:"Test Answer"});
+    const resp=await faqEntry.save();
     res.statusCode = 200;
     res.setHeader('Accept', 'application/json',);
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.json({message:'Entry Succeed',resp});
+  }
+) 
+    
+    
 
 });
 
@@ -204,10 +243,17 @@ UserModel.find({role:"62ebd9c02d5208ee7ff6631e"})
 app.get('/faqsById', async(req, res)=>{
 
 
-
-  var id = req.query.id;
-
-  FaqModel.find({course:id})
+console.log(req.query.Course_Name)
+  var {id, iid, Course_Name} = req.query;
+ 
+let a={}
+if(!iid && !Course_Name){
+  a={};
+}else{
+  a={$or:[{id:iid},{CourseName:Course_Name}]};
+}
+console.log(a)
+  FaqModel.find(a)
   .populate('course')
   .exec(function (err, doc) {
       if(err) { res.status(500).json(err); return; };
@@ -224,10 +270,15 @@ app.get('/faqs', async(req, res)=>{
     FaqModel.find()
     .populate('course')
     .exec(function (err, doc) {
-        if(err) { res.status(500).json(err); return; };
-        res.setHeader('Content-Type', 'text/plain');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(200).json(doc);
+        if(err) { res.status(400).json(err); return; };
+        // res.setHeader("Content-Type", "application/json");
+        // res.setHeader('Access-Control-Allow-Origin', '*');
+        // res.body(doc);
+        res.status(200).json({ "statuscode": 200,
+         "message": "success",doc});
+        // res.status(200).send({ "statuscode": 200,
+        // "message": "success",doc});
+        // res.json({ message: 'Book updated!', doc });
     });}catch(e){
       console.log(e)
     }
@@ -324,6 +375,6 @@ app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
-
+module.exports = app; // for testing
 
 

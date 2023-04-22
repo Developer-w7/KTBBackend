@@ -27,7 +27,7 @@ const verifyUserLogin = async (email,password)=>{
    }
 }
 
-exports.listCategories = [
+exports.checkLogin = [
    async(req, res)=> {
    const {email,password:plainTextPassword}=req.body;
    const AuthData = await verifyUserLogin(email?email:'Rashad.Raynor45@gmail.com',plainTextPassword?plainTextPassword:'123456');
