@@ -8,12 +8,15 @@ const conn = process.env.connectionString;
 const connectToDb = async () => {
     try {
         console.log(conn);
-        await Mongoose.connect(conn, { autoIndex: false });
+        await Mongoose.connect(conn, { 
+            autoIndex: true,
+            //  useCreateIndex: true, 
+         });
         
         console.log('Connected to mongo!!!');
         return 1;
     }catch(err){
-        console.log('Could not connect to MongoDB');
+        console.log('Could not connect to MongoDB',err);
         return 0;
     }  
   }
@@ -23,7 +26,9 @@ const connectToDb = async () => {
 
 const connection = Mongoose.createConnection(conn, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    autoIndex: true,
+    // useCreateIndex: true, 
 });
 
 // module.exports = connection;
